@@ -17,8 +17,8 @@ int input_init()
     // Select input events we want to handle
     XSelectInput(display, window, 
         KeyPressMask | KeyReleaseMask |     // Keyboard events
-        // ButtonPressMask | ButtonReleaseMask | // Mouse button events
-        // PointerMotionMask |                  // Mouse movement
+        ButtonPressMask | ButtonReleaseMask | // Mouse button events
+        PointerMotionMask |                  // Mouse movement
         ExposureMask);                       // Window exposure
     
     return 0;

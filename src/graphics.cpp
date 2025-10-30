@@ -83,7 +83,7 @@ void graphics_drawCircle(vect2d pos, unsigned int r, unsigned long color)
 {
     setColor(color);
     // Draw to off-screen buffer
-    XFillArc(display, buffer, gc, pos.x-r, pos.y-r, r*2, r*2, 0 * 64, 360 * 64);
+    XDrawArc(display, buffer, gc, pos.x-r, pos.y-r, r*2, r*2, 0 * 64, 360 * 64);
 }
 
 void graphics_fillCircle(vect2d pos, unsigned int r, unsigned long color)

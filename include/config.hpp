@@ -4,3 +4,7 @@
 #define SCREEN_HEIGHT 500
 
 #define BKG_COLOR 0,5,10
+
+// Physics Defines
+#define GRAVITY 1000
+#define BOUNCE_CONST 0.7

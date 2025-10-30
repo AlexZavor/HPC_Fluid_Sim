@@ -8,18 +8,19 @@
 
 class vect2d {
 public:
-    float x;
-    float y;
+    double x;
+    double y;
 public:
-    float getAngle();
+    double getAngle();
+    void normalize();
+    double getMag();
+    vect2d rotate(double angle);
+
     vect2d operator+(vect2d const& obj);
-    vect2d operator*(float const& obj);
+    vect2d operator*(double const& obj);
     vect2d operator%(vect2d const& obj);
     vect2d operator-(vect2d const& obj);
-    void normalize();
-    float getMag();
-    vect2d rotate(float angle);
 
-    vect2d(float x, float y);
+    vect2d(double x, double y);
     vect2d(){}
 };

@@ -2,20 +2,28 @@
 #include "graphics.hpp"
 #include "input.hpp"
 #include "timing.hpp"
-#include "vect2d.hpp"
 #include "config.hpp"
+#include "particle.hpp"
 
 input_t input;
+particle* particles;
+
+void make_particles(vect2d pos, int width, int height, int particle_size, int particle_space){
+    particles = (particle*)malloc(width*height*sizeof(particle));
+    for(int x = 0; x < width; x++){
+        for(int y = 0; y < height; y++){
+            particle_init( &particles[y*(width) + x], pos+vect2d(x*particle_space, y*particle_space), particle_size);
+        }
+    }
+}
 
 int main(int argc, char** argv) {    
     // Inits
     graphics_init(SCREEN_WIDTH, SCREEN_HEIGHT);
     input_init();
-    static float x,y;
-    static float vx,vy;
 
-    x = SCREEN_WIDTH/2; y = SCREEN_HEIGHT/2;
-    vy = 0;
+    particle ball;
+    particle_init(&ball, vect2d(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), 10);
 
     
     // Loop
@@ -28,14 +36,10 @@ int main(int argc, char** argv) {
         graphics_clearScreen(_RGB(BKG_COLOR));
         
         // Update
-        vy += 1000*dt;// gravity
-        if (y+20 + vy*dt > SCREEN_HEIGHT){//bounce
-            vy = -vy*0.7;
-        }
-        y += vy*dt;// velocity
+        particle_update(&ball, dt, &input);
 
         // Draw
-        graphics_fillCircle(vect2d(x,y), 20, _RGB(0,0,255));
+        particle_draw(&ball);
 
         // Swap buffers to display the frame
         graphics_swapBuffers();
