@@ -7,12 +7,16 @@
 
 input_t input;
 particle* particles;
+#define PARTICLES_X 40
+#define PARTICLES_Y 40
+#define TOTAL_PARTICLES PARTICLES_X*PARTICLES_Y
 
 void make_particles(vect2d pos, int width, int height, int particle_size, int particle_space){
     particles = (particle*)malloc(width*height*sizeof(particle));
     for(int x = 0; x < width; x++){
         for(int y = 0; y < height; y++){
-            particle_init( &particles[y*(width) + x], pos+vect2d(x*particle_space, y*particle_space), particle_size);
+            vect2d pos_noise = vect2d(rand()%100/(double)10000,rand()%100/(double)10000);
+            particle_init( &particles[y*(width) + x], pos+vect2d(x*particle_space, y*particle_space) + pos_noise, particle_size);
         }
     }
 }
@@ -22,10 +26,9 @@ int main(int argc, char** argv) {
     graphics_init(SCREEN_WIDTH, SCREEN_HEIGHT);
     input_init();
 
-    particle ball;
-    particle_init(&ball, vect2d(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), 10);
+    make_particles(vect2d(200,50), PARTICLES_X, PARTICLES_Y, 3, 7);
 
-    
+
     // Loop
     while (!input.quit) {
         input_check(&input);
@@ -36,16 +39,20 @@ int main(int argc, char** argv) {
         graphics_clearScreen(_RGB(BKG_COLOR));
         
         // Update
-        particle_update(&ball, dt, &input);
+        for(int i = 0; i < TOTAL_PARTICLES; i++){
+            particle_update(&particles[i], dt, &input, particles, TOTAL_PARTICLES);
+        }
 
         // Draw
-        particle_draw(&ball);
+        for(int i = 0; i < TOTAL_PARTICLES; i++){
+            particle_draw(&particles[i]);
+        }
 
         // Swap buffers to display the frame
         graphics_swapBuffers();
-        // Sleep a millisec to keep our frames from lagging my poor computer
-        timing_sleepSeconds(0.001);
     }
+
+    free(particles);
 
     graphics_deinit();
     input_deinit();

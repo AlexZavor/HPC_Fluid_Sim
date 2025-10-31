@@ -7,10 +7,24 @@ vect2d vect2d::operator+(vect2d const& obj){
     return value;
 }
 
+vect2d vect2d::operator+=(vect2d const &obj)
+{
+    this->x += obj.x;
+    this->y += obj.y;
+    return *this;
+}
+
 vect2d vect2d::operator*(double const &obj) {
     vect2d value;
     value.x = obj * x;
     value.y = obj * y;
+    return value;
+}
+
+vect2d vect2d::operator/(double const &obj) {
+    vect2d value;
+    value.x = obj / x;
+    value.y = obj / y;
     return value;
 }
 
