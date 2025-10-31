@@ -7,8 +7,8 @@
 
 input_t input;
 particle* particles;
-#define PARTICLES_X 40
-#define PARTICLES_Y 40
+#define PARTICLES_X 50
+#define PARTICLES_Y 50
 #define TOTAL_PARTICLES PARTICLES_X*PARTICLES_Y
 
 void make_particles(vect2d pos, int width, int height, int particle_size, int particle_space){
@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
     graphics_init(SCREEN_WIDTH, SCREEN_HEIGHT);
     input_init();
 
-    make_particles(vect2d(200,50), PARTICLES_X, PARTICLES_Y, 3, 7);
+    make_particles(vect2d(250,100), PARTICLES_X, PARTICLES_Y, 5, 10);
 
 
     // Loop
@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
         graphics_clearScreen(_RGB(BKG_COLOR));
         
         // Update
-	    particle_updateDensitys(particles, TOTAL_PARTICLES);
+	    particle_updateDensities(particles, TOTAL_PARTICLES);
         for(int i = 0; i < TOTAL_PARTICLES; i++){
             particle_update(particles, TOTAL_PARTICLES, i, dt, &input);
         }

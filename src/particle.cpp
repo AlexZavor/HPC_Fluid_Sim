@@ -12,15 +12,14 @@ void particle_init(particle* obj, vect2d pos, unsigned int radius){
 double smoothKernel(double radius, double dist){
 	if(dist>=radius)return 0;
 	static double volume = M_PI * pow(radius, 4)/6;
-	// double value = (radius-dist <= 0) ? 0 : (radius*radius - dist*dist);
 	return (radius-dist) * (radius-dist) / volume;
 }
 
 double smoothKernelDerivative(double radius, double dist){
 	if(dist>=radius) return 0;
 	// double f = (radius*radius) - (dist*dist);
-	// static double scale = (double)12 / ((double)M_PI * pow(radius, 4));
-	const double scale = 0.000001;
+	static double scale = (double)12 / ((double)M_PI * pow(radius, 4));
+	// const double scale = 0.000001;
 	return (dist-radius)*scale;
 }
 
@@ -39,12 +38,12 @@ double calcDensity(particle* list, int size, int point_index){
 	return density;
 }
 
-void particle_updateDensitys(particle* list, int size){
+void particle_updateDensities(particle* list, int size){
 	for(int i = 0; i < size; i++){
 		particle* particle = &list[i];
 		particle->density = calcDensity(list, size, i);
 		if (particle->density == 0) 
-			particle->density = 0.000000000001;
+			particle->density = 0.00000000000001;
 	}
 }
 
@@ -96,12 +95,17 @@ void particle_update(particle* list, int size, int point_index, double dt, input
 	}	
 	vect2d pressure = calcGradient(list, size, point_index) / obj->density; // pressure
 	// if(!std::isnan(pressure.x) && !std::isnan(pressure.y)){
-		vel -= (pressure*dt);
+		vel += (pressure*-dt);
 	// }else{
 	// 	pos = ZERO_VECT;
 	// 	printf("%f\n", pressure.x);
 	// }
 
+
+	// Velocity Clamping
+	// if(vel.getMag()>(100/dt)){
+	// 	vel = vel/2;
+	// }
 	pos += vel*dt;// velocity
 
 	// Collision
@@ -128,6 +132,11 @@ void particle_update(particle* list, int size, int point_index, double dt, input
 }
 
 void particle_draw(particle* obj){
-	graphics_fillCircle(obj->pos, obj->radius, _RGB(PART_COLOR));
-	// graphics_drawCircle(obj->pos, obj->radius, _RGB(PART_COLOR/2));
+	double density = (obj->density-TARGET_DENSITY)*100000;
+
+	if(density > 255)density = 255;
+	if(density < -255)density = -255;
+	
+	graphics_fillCircle(obj->pos, obj->radius, _RGB(density>0?density:0, 0 ,density<0?-density:0));
+	graphics_drawCircle(obj->pos, obj->radius, _RGB(PART_COLOR/2));
 }
