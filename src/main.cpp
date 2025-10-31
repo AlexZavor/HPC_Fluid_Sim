@@ -33,14 +33,16 @@ int main(int argc, char** argv) {
     while (!input.quit) {
         input_check(&input);
         double dt = timing_getDelta();
+        dt = 10/(double)1000;
         // printf("dt - %fms\n", dt*1000);
         
         // Erase
         graphics_clearScreen(_RGB(BKG_COLOR));
         
         // Update
+	    particle_updateDensitys(particles, TOTAL_PARTICLES);
         for(int i = 0; i < TOTAL_PARTICLES; i++){
-            particle_update(&particles[i], dt, &input, particles, TOTAL_PARTICLES);
+            particle_update(particles, TOTAL_PARTICLES, i, dt, &input);
         }
 
         // Draw

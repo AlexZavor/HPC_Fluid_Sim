@@ -17,11 +17,12 @@ public:
     vect2d rotate(double angle);
 
     vect2d operator+(vect2d const& obj);
-    vect2d operator+=(vect2d const& obj);
+    void operator+=(vect2d const& obj);
     vect2d operator*(double const& obj);
     vect2d operator/(double const& obj);
     vect2d operator%(vect2d const& obj);
     vect2d operator-(vect2d const& obj);
+    vect2d operator-=(vect2d const& obj);
 
     vect2d(double x, double y);
     vect2d(){}

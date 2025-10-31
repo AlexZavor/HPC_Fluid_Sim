@@ -11,4 +11,9 @@
 #define GRAVITY 0
 #define BOUNCE_CONST 0.7
 
-#define MOUSE_FORCE 10
+#define MOUSE_FORCE 1
+
+// Pressure defines
+#define SMOOTH_RADIUS 250
+#define TARGET_DENSITY 0.005
+#define PRESSURE_FORCE 1000

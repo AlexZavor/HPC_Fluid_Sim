@@ -1,6 +1,7 @@
 #include "particle.hpp"
 #include "graphics.hpp"
 #include "config.hpp"
+#include <math.h>
 
 void particle_init(particle* obj, vect2d pos, unsigned int radius){
 	obj->pos = pos;
@@ -8,18 +9,98 @@ void particle_init(particle* obj, vect2d pos, unsigned int radius){
 	obj->radius = radius;
 }
 
-void particle_update(particle* obj, double dt, input_t* input, particle* particle_list, int particle_list_len){
-	#define vel (obj->vel)
-	#define pos (obj->pos)
+double smoothKernel(double radius, double dist){
+	if(dist>=radius)return 0;
+	static double volume = M_PI * pow(radius, 4)/6;
+	// double value = (radius-dist <= 0) ? 0 : (radius*radius - dist*dist);
+	return (radius-dist) * (radius-dist) / volume;
+}
+
+double smoothKernelDerivative(double radius, double dist){
+	if(dist>=radius) return 0;
+	// double f = (radius*radius) - (dist*dist);
+	// static double scale = (double)12 / ((double)M_PI * pow(radius, 4));
+	const double scale = 0.000001;
+	return (dist-radius)*scale;
+}
+
+double calcDensity(particle* list, int size, int point_index){
+	double density = 0;
+
+	vect2d point = list[point_index].pos;
+	for(int i = 0; i < size; i++){
+		if(i == point_index){continue;}
+		double dist = (list[i].pos - point).getMag();
+		if (dist > SMOOTH_RADIUS) continue;
+		double influence = smoothKernel(SMOOTH_RADIUS, dist);
+		density += influence;
+	}
+
+	return density;
+}
+
+void particle_updateDensitys(particle* list, int size){
+	for(int i = 0; i < size; i++){
+		particle* particle = &list[i];
+		particle->density = calcDensity(list, size, i);
+		if (particle->density == 0) 
+			particle->density = 0.000000000001;
+	}
+}
+
+double densityToPressure(double density){
+	double densityError = density-TARGET_DENSITY;
+	double pressure = densityError * PRESSURE_FORCE;
+	return pressure;
+}
+
+vect2d calcGradient(particle* list, int size, int point_index){
+	vect2d gradient = ZERO_VECT;
+	
+	vect2d point = list[point_index].pos;
+	for(int i = 0; i < size; i++){
+		if(i == point_index){continue;}
+		vect2d diff = (list[i].pos - point);
+		double dist = diff.getMag();
+		vect2d dir;
+		if(dist == 0){
+			dir = NORMAL_VECT;
+		}else{
+			dir = diff/dist;
+		}
+		double slope = smoothKernelDerivative(SMOOTH_RADIUS, dist);
+		double density = list[point_index].density;
+		gradient += dir*slope*-1*densityToPressure(density)/density;
+		// printf("%f\t%f\t%f\t%f\t%f\n", slope, density, dir.x, dir.y, dist);
+	}
+
+	return gradient;
+}
+
+		// printf("%f\t%f\t%f\t%f\t%f\n", diff.x, diff.y, dir.x, dir.y, dist);
+		// exit(-1);
+
+
+void particle_update(particle* list, int size, int point_index, double dt, input_t* input){
+	#define vel (list[point_index].vel)
+	#define pos (list[point_index].pos)
+
+	particle* obj = &list[point_index];
 
 	// Forces
 	vel.y += GRAVITY*dt; // Gravity
 	if(input->mouseLeft){ // Magic mouse
 		vect2d mouse_vect = vect2d(input->mouseX, input->mouseY);
 		vect2d force_vect = mouse_vect - pos;
-		// printf("x-%d \t y-%d\n", input->mouseX, input->mouseY);
 		vel += (force_vect*MOUSE_FORCE*dt);
-	}
+	}	
+	vect2d pressure = calcGradient(list, size, point_index) / obj->density; // pressure
+	// if(!std::isnan(pressure.x) && !std::isnan(pressure.y)){
+		vel -= (pressure*dt);
+	// }else{
+	// 	pos = ZERO_VECT;
+	// 	printf("%f\n", pressure.x);
+	// }
 
 	pos += vel*dt;// velocity
 
@@ -44,11 +125,9 @@ void particle_update(particle* obj, double dt, input_t* input, particle* particl
 	#undef vel
 	#undef pos
 
-	// Pressure
-	// TODO: Pressure
 }
 
 void particle_draw(particle* obj){
 	graphics_fillCircle(obj->pos, obj->radius, _RGB(PART_COLOR));
-	graphics_drawCircle(obj->pos, obj->radius, _RGB(PART_COLOR/2));
+	// graphics_drawCircle(obj->pos, obj->radius, _RGB(PART_COLOR/2));
 }

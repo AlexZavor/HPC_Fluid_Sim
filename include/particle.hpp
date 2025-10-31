@@ -6,10 +6,13 @@ typedef struct{
 	vect2d pos;
 	vect2d vel;
 	int radius;
+	double density;
 } particle;
 
 void particle_init(particle* obj, vect2d pos, unsigned int radius);
 
-void particle_update(particle* obj, double dt, input_t* input, particle* particle_list, int particle_list_len);
+void particle_update(particle* list, int size, int point_index, double dt, input_t* input);
+
+void particle_updateDensitys(particle* list, int size);
 
 void particle_draw(particle* obj);
