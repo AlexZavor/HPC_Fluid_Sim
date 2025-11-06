@@ -50,6 +50,7 @@ void input_check(input_t* input)
                     if (keysym == XK_Down)  input->arrowDown = isPress;
                     if (keysym == XK_Left)  input->arrowLeft = isPress;
                     if (keysym == XK_Right) input->arrowRight = isPress;
+                    if (keysym == XK_space) input->space = isPress;
                     
                     // Exit on Escape
                     if (keysym == XK_Escape) input->quit = isPress;

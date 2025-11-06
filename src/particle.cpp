@@ -91,7 +91,7 @@ void particle_update(particle* list, int size, int point_index, double dt, input
 	if(input->mouseLeft){ // Magic mouse
 		vect2d mouse_vect = vect2d(input->mouseX, input->mouseY);
 		vect2d force_vect = mouse_vect - pos;
-		vel += (force_vect*MOUSE_FORCE*dt);
+		vel += (force_vect*mouse_force*dt);
 	}	
 	vect2d pressure = calcGradient(list, size, point_index) / obj->density; // pressure
 	// if(!std::isnan(pressure.x) && !std::isnan(pressure.y)){

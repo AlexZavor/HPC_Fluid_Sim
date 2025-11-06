@@ -1,6 +1,7 @@
 #include "graphics.hpp"
 #include <stdio.h>
 #include "config.hpp"
+#include "string.h"
 
 static Display* display;
 static Window window;
@@ -91,6 +92,18 @@ void graphics_fillCircle(vect2d pos, unsigned int r, unsigned long color)
     setColor(color);
     // Draw to off-screen buffer
     XFillArc(display, buffer, gc, pos.x-r, pos.y-r, r*2, r*2, 0 * 64, 360 * 64);
+}
+
+void graphics_fillRect(vect2d pos, unsigned int w, unsigned int h, unsigned long color)
+{
+    setColor(color);
+    XFillRectangle(display, buffer, gc, pos.x, pos.y, w, h);
+}
+
+void graphics_drawString(vect2d pos, const char *text, unsigned long color)
+{
+    setColor(color);
+    XDrawString(display, buffer, gc, pos.x, pos.y, text, strlen(text));
 }
 
 // function to swap buffers at the end of frame

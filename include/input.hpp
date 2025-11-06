@@ -13,6 +13,7 @@ typedef struct {
     bool arrowDown;
     bool arrowLeft;
     bool arrowRight;
+    bool space;
     
     // General state
     bool quit;

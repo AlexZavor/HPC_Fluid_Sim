@@ -29,6 +29,10 @@ void graphics_clearScreen(unsigned long color);
 void graphics_drawCircle(vect2d pos, unsigned int r, unsigned long color);
 void graphics_fillCircle(vect2d pos, unsigned int r, unsigned long color);
 
+void graphics_fillRect(vect2d pos, unsigned int w, unsigned int h, unsigned long color);
+
+void graphics_drawString(vect2d pos, const char* text, unsigned long color);
+
 // Swap the back buffer to the screen and flush the display.
 // Call this once at the end of each frame after all drawing is complete.
 void graphics_swapBuffers(void);
