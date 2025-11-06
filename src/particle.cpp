@@ -11,14 +11,13 @@ void particle_init(particle* obj, vect2d pos, unsigned int radius){
 
 double smoothKernel(double radius, double dist){
 	if(dist>=radius)return 0;
-	static double volume = M_PI * pow(radius, 4)/6;
+	double volume = M_PI * pow(radius, 4)/6;
 	return (radius-dist) * (radius-dist) / volume;
 }
 
 double smoothKernelDerivative(double radius, double dist){
 	if(dist>=radius) return 0;
-	// double f = (radius*radius) - (dist*dist);
-	static double scale = (double)12 / ((double)M_PI * pow(radius, 4));
+	double scale = (double)12 / ((double)M_PI * pow(radius, 4));
 	// const double scale = 0.000001;
 	return (dist-radius)*scale;
 }
@@ -39,6 +38,9 @@ double calcDensity(particle* list, int size, int point_index){
 }
 
 void particle_updateDensities(particle* list, int size){
+	#if defined(_OPENMP)
+		#pragma omp parallel for schedule(dynamic, 8)
+	#endif
 	for(int i = 0; i < size; i++){
 		particle* particle = &list[i];
 		particle->density = calcDensity(list, size, i);

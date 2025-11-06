@@ -18,6 +18,7 @@ double mouse_force = 0;
 double PRESSURE_FORCE = 500000;
 double GRAVITY = 100;
 double TARGET_DENSITY = 0.0063;
+double SMOOTH_RADIUS = 100;
 
 
 void make_particles(vect2d pos, int width, int height, int particle_size, int particle_space){
@@ -41,6 +42,7 @@ int main(int argc, char** argv) {
     gui->addSlider("Fp", &PRESSURE_FORCE, 0, 10000000);
     gui->addSlider("G", &GRAVITY, 0, 1000);
     gui->addSlider("TD", &TARGET_DENSITY, 0, 0.03);
+    gui->addSlider("SR", &SMOOTH_RADIUS, 0, 500);
 
     make_particles(vect2d(50,100), PARTICLES_X, PARTICLES_Y, 5, 10);
 
@@ -57,6 +59,10 @@ int main(int argc, char** argv) {
         
         // Update
 	    particle_updateDensities(particles, TOTAL_PARTICLES);
+
+        #if defined(_OPENMP)
+            #pragma omp parallel for schedule(dynamic, 8)
+        #endif
         for(int i = 0; i < TOTAL_PARTICLES; i++){
             particle_update(particles, TOTAL_PARTICLES, i, dt, &input);
         }

@@ -16,7 +16,8 @@ extern double GRAVITY;
 extern double mouse_force;
 
 // Pressure defines
-#define SMOOTH_RADIUS 50
+// #define SMOOTH_RADIUS 50
+extern double SMOOTH_RADIUS;
 // #define TARGET_DENSITY 0.01
 extern double TARGET_DENSITY;
 // #define PRESSURE_FORCE 1500000
