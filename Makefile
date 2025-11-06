@@ -20,5 +20,5 @@ clean:
 	rm -f serial.out OMP.out
 
 .PHONY: move
-move:
+move: serial.out OMP.out
 	scp ./serial.out ./OMP.out alexz9@ssh.et.byu.edu:~/

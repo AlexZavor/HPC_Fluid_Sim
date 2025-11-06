@@ -8,16 +8,16 @@
 
 input_t input;
 particle* particles;
-#define PARTICLES_X 150
-#define PARTICLES_Y 30
+#define PARTICLES_X 80
+#define PARTICLES_Y 40
 #define TOTAL_PARTICLES PARTICLES_X*PARTICLES_Y
 
 // GUI variables
 ui* gui;
 double mouse_force = 0;
-double PRESSURE_FORCE = 500000;
-double GRAVITY = 100;
-double TARGET_DENSITY = 0.0063;
+double PRESSURE_FORCE = 700000;
+double GRAVITY = 330;
+double TARGET_DENSITY = 0.0111;
 double SMOOTH_RADIUS = 100;
 
 
@@ -38,13 +38,13 @@ int main(int argc, char** argv) {
 
     // UI
     gui = new ui();
-    gui->addSlider("Fm", &mouse_force, 0, 10);
+    gui->addSlider("Fm", &mouse_force, 0, 100);
     gui->addSlider("Fp", &PRESSURE_FORCE, 0, 10000000);
     gui->addSlider("G", &GRAVITY, 0, 1000);
     gui->addSlider("TD", &TARGET_DENSITY, 0, 0.03);
     gui->addSlider("SR", &SMOOTH_RADIUS, 0, 500);
 
-    make_particles(vect2d(50,100), PARTICLES_X, PARTICLES_Y, 5, 10);
+    make_particles(vect2d(50,100), PARTICLES_X, PARTICLES_Y, 4, 8);
 
 
     // Loop

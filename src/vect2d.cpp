@@ -21,6 +21,13 @@ vect2d vect2d::operator*(double const &obj) {
     return value;
 }
 
+void vect2d::operator*=(double const &obj)
+{
+    this->x *= obj;
+    this->y *= obj;
+    return;
+}
+
 vect2d vect2d::operator/(double const &obj) {
     vect2d value;
     value.x = x / obj;

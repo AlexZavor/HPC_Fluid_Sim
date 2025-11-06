@@ -19,6 +19,7 @@ public:
     vect2d operator+(vect2d const& obj);
     void operator+=(vect2d const& obj);
     vect2d operator*(double const& obj);
+    void operator*=(double const& obj);
     vect2d operator/(double const& obj);
     vect2d operator%(vect2d const& obj);
     vect2d operator-(vect2d const& obj);
