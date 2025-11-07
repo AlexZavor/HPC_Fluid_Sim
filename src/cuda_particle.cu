@@ -11,22 +11,21 @@ static particle* list_d;
 static input_t* input_d;
 static int first = true;
 
-__global__ void cuda_density(particle* list, int size){
-	int index = blockDim.x*blockIdx.x + threadIdx.x;
-	if(index > size){return;}
-	particle* particle = &list[index];
-	particle->density = calcDensity(list, size, index);
-	if (particle->density == 0) 
-		particle->density = 0.00000000000001;
-}
-
 __global__ void cuda_update(particle* list, int size, double dt, input_t* input){
 	int index = blockDim.x*blockIdx.x + threadIdx.x;
 	if(index > size){return;}
+	
+	// Update Densitys
+	particle* obj = &list[index];
+	obj->density = calcDensity(list, size, index);
+	if (obj->density == 0) 
+		obj->density = 0.00000000000001;
+
+	__syncthreads();
+
 	#define vel (list[index].vel)
 	#define pos (list[index].pos)
 
-	particle* obj = &list[index];
 
 	// Forces
 	vel.y += GRAVITY*dt; // Gravity
@@ -98,23 +97,6 @@ void cuda_particle_update(particle* list, int size, double dt, input_t* input){
 
   	cudaDeviceSynchronize();
   	cudaMemcpy(list, list_d, size*sizeof(particle), cudaMemcpyDeviceToHost);  
-}
-
-void cuda_particle_updateDensities(particle* list, int size){
-	if(first){
-		first = false;
-		int bytes = size * sizeof(particle);
-  		cudaMalloc((void**) &list_d, bytes);
-  		cudaMemcpy(list_d, list, bytes, cudaMemcpyHostToDevice);
-  		cudaMalloc((void**) &input_d, sizeof(input_t));
-	}
-	dim3 blocks(ceil(size/(float)BLOCK_SIZE), 1, 1);
-  	dim3 threads(BLOCK_SIZE, 1, 1);
-
-	// launch kernel
-	cuda_density<<<blocks, threads>>>(list_d, size);
-
-  	cudaDeviceSynchronize();
 }
 
 

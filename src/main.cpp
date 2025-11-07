@@ -14,11 +14,13 @@ particle* particles;
 
 // GUI variables
 ui* gui;
-// double mouse_force = 0;
-// double PRESSURE_FORCE = 7000000;
-// double GRAVITY = 650;
-// double TARGET_DENSITY = 0.0155;
-// double SMOOTH_RADIUS = 65;
+#ifndef __NVCC__
+double mouse_force = 6000;
+double PRESSURE_FORCE = 40000000;
+double GRAVITY = 2000;
+double TARGET_DENSITY = 0.0155;
+double SMOOTH_RADIUS = 100;
+#endif
 
 #ifdef BENCHMARK
 double frametimes[BENCH_FRAMES];
@@ -41,15 +43,17 @@ int main(int argc, char** argv) {
     graphics_init(SCREEN_WIDTH, SCREEN_HEIGHT);
     input_init();
 
-    make_particles(vect2d(50,100), PARTICLES_X, PARTICLES_Y, 4, 8);
+    make_particles(vect2d(50,100), PARTICLES_X, PARTICLES_Y, 4, 7.5);
 
     // UI
     gui = new ui();
-    // gui->addSlider("Fm", &mouse_force, 0, 1000);
-    // gui->addSlider("Fp", &PRESSURE_FORCE, 0, 10000000);
-    // gui->addSlider("G", &GRAVITY, 0, 1000);
-    // gui->addSlider("TD", &TARGET_DENSITY, 0, 0.03);
-    // gui->addSlider("SR", &SMOOTH_RADIUS, 0, 500);
+    #ifndef __NVCC__
+    gui->addSlider("Fm", &mouse_force, 0, 10000);
+    gui->addSlider("Fp", &PRESSURE_FORCE, 0, 100000000);
+    gui->addSlider("G", &GRAVITY, 0, 10000);
+    gui->addSlider("TD", &TARGET_DENSITY, 0, 0.03);
+    gui->addSlider("SR", &SMOOTH_RADIUS, 0, 500);
+    #endif
 
     // Loop
     while (!input.quit) {
@@ -69,7 +73,6 @@ int main(int argc, char** argv) {
         // --------------- Critical Section
         // Update
         #ifdef __NVCC__
-            cuda_particle_updateDensities(particles, TOTAL_PARTICLES);
             cuda_particle_update(particles, TOTAL_PARTICLES, dt, &input);
         #else
             particle_updateDensities(particles, TOTAL_PARTICLES);

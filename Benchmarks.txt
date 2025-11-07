@@ -3,3 +3,7 @@ serial: 410.53ms
 OMP   :  47.63ms
 CUDA  :  30.23ms
 
+(11/7/25) 80x40 particles, Auto-04.
+serial: 837.71ms
+OMP   :  56.12ms
+CUDA  :  33.12ms

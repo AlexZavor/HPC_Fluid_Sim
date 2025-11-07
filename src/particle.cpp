@@ -99,10 +99,10 @@ CU_FLAG vect2d calcViscosityForce(particle* list, int size, int point_index){
 		vect2d diff = (list[i].pos - point);
 		double dist = diff.getMag();
 
-		viscosityForce += (list[i].vel - list[point_index].vel) * smoothKernel(SMOOTH_RADIUS, dist);
+		viscosityForce += (list[i].vel - list[point_index].vel) * smoothKernel(10, dist);
 	}
 
-	return viscosityForce * 0.3;
+	return viscosityForce * 0.2;
 }
 
 
