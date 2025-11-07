@@ -1,0 +1,5 @@
+(11/6/25) 80x40 particles, DigialLab.
+serial: 410.53ms
+OMP   :  47.63ms
+CUDA  :  30.23ms
+

@@ -3,26 +3,33 @@
 #include "config.hpp"
 #include <math.h>
 
+#ifdef __host__
+    #include <cuda.h>
+    #define CU_FLAG __host__ __device__
+#else
+    #define CU_FLAG
+#endif
+
 void particle_init(particle* obj, vect2d pos, unsigned int radius){
 	obj->pos = pos;
 	obj->vel = ZERO_VECT;
 	obj->radius = radius;
 }
 
-double smoothKernel(double radius, double dist){
+CU_FLAG double smoothKernel(double radius, double dist){
 	if(dist>=radius)return 0;
 	double volume = M_PI * pow(radius, 4)/6;
 	return (radius-dist) * (radius-dist) / volume;
 }
 
-double smoothKernelDerivative(double radius, double dist){
+CU_FLAG double smoothKernelDerivative(double radius, double dist){
 	if(dist>=radius) return 0;
 	double scale = (double)12 / ((double)M_PI * pow(radius, 4));
 	// const double scale = 0.000001;
 	return (dist-radius)*scale;
 }
 
-double calcDensity(particle* list, int size, int point_index){
+CU_FLAG double calcDensity(particle* list, int size, int point_index){
 	double density = 0;
 
 	vect2d point = list[point_index].pos;
@@ -49,13 +56,19 @@ void particle_updateDensities(particle* list, int size){
 	}
 }
 
-double densityToPressure(double density){
+CU_FLAG double densityToPressure(double density){
 	double densityError = density-TARGET_DENSITY;
 	double pressure = densityError * PRESSURE_FORCE;
 	return pressure;
 }
 
-vect2d calcGradient(particle* list, int size, int point_index){
+CU_FLAG double calcSharedPressure(double densityA, double densityB){
+	double pressureA = densityToPressure(densityA);
+	double pressureB = densityToPressure(densityB);
+	return (pressureA + pressureB)/2;
+}
+
+CU_FLAG vect2d calcGradient(particle* list, int size, int point_index){
 	vect2d gradient = ZERO_VECT;
 	
 	vect2d point = list[point_index].pos;
@@ -71,15 +84,26 @@ vect2d calcGradient(particle* list, int size, int point_index){
 		}
 		double slope = smoothKernelDerivative(SMOOTH_RADIUS, dist);
 		double density = list[point_index].density;
-		gradient += dir*slope*-1*densityToPressure(density)/density;
-		// printf("%f\t%f\t%f\t%f\t%f\n", slope, density, dir.x, dir.y, dist);
+		double sharedPressure = calcSharedPressure(density, list[i].density);
+		gradient += dir*slope*-1*sharedPressure/density;
 	}
 
 	return gradient;
 }
 
-		// printf("%f\t%f\t%f\t%f\t%f\n", diff.x, diff.y, dir.x, dir.y, dist);
-		// exit(-1);
+CU_FLAG vect2d calcViscosityForce(particle* list, int size, int point_index){
+	vect2d viscosityForce = ZERO_VECT;
+	vect2d point = list[point_index].pos;
+	for(int i = 0; i < size; i++){
+		if(i == point_index){continue;}
+		vect2d diff = (list[i].pos - point);
+		double dist = diff.getMag();
+
+		viscosityForce += (list[i].vel - list[point_index].vel) * smoothKernel(SMOOTH_RADIUS, dist);
+	}
+
+	return viscosityForce * 0.3;
+}
 
 
 void particle_update(particle* list, int size, int point_index, double dt, input_t* input){
@@ -89,18 +113,19 @@ void particle_update(particle* list, int size, int point_index, double dt, input
 	particle* obj = &list[point_index];
 
 	// Forces
-	vel *= 0.995; // viscosity
 	vel.y += GRAVITY*dt; // Gravity
-	if(input->mouseLeft){ // Magic mouse
+	if(input->mouseLeft||input->mouseRight){ // Magic mouse
 		vect2d mouse_vect = vect2d(input->mouseX, input->mouseY);
 		vect2d force_vect = mouse_vect - pos;
-		if(force_vect.getMag() < 70){
-			vel += (force_vect*mouse_force*dt);
+		if(force_vect.getMag() < 40){
+			vel += (force_vect*mouse_force*dt) * (input->mouseLeft?1:-1);
 		}
-	}	
+	}
 	vect2d pressure = calcGradient(list, size, point_index) / obj->density; // pressure
 	vel += (pressure*-dt);
 
+	// vel += calcViscosityForce(list, size, point_index);
+	// vel *= 0.995; // viscosity
 
 	// Velocity Clamping
 	// if(vel.getMag()>(100/dt)){
@@ -112,18 +137,22 @@ void particle_update(particle* list, int size, int point_index, double dt, input
 	if (pos.y > SCREEN_HEIGHT-obj->radius){ // floor
 		pos.y = SCREEN_HEIGHT-obj->radius;
 		vel.y = -vel.y*BOUNCE_CONST;
+		pos += vel*dt;// velocity
 	}
 	else if (pos.y < obj->radius){ // ceiling
 		pos.y = obj->radius;
 		vel.y = -vel.y*BOUNCE_CONST;
+		pos += vel*dt;// velocity
 	}
 	if (pos.x < obj->radius){ // L wall
 		pos.x = obj->radius;
 		vel.x = -vel.x*BOUNCE_CONST;
+		pos += vel*dt;// velocity
 	}
 	else if (pos.x > SCREEN_WIDTH-obj->radius){ // R wall
 		pos.x = SCREEN_WIDTH-obj->radius;
 		vel.x = -vel.x*BOUNCE_CONST;
+		pos += vel*dt;// velocity
 	}
 
 	#undef vel

@@ -1,0 +1,122 @@
+// #define __NVCC__//just for writing code.
+#ifdef __NVCC__
+#include "particle.cpp"
+#include "vect2d.h"
+#include "config.hpp"
+#include <math.h>
+#include <cuda.h>
+
+#define BLOCK_SIZE 128
+static particle* list_d;
+static input_t* input_d;
+static int first = true;
+
+__global__ void cuda_density(particle* list, int size){
+	int index = blockDim.x*blockIdx.x + threadIdx.x;
+	if(index > size){return;}
+	particle* particle = &list[index];
+	particle->density = calcDensity(list, size, index);
+	if (particle->density == 0) 
+		particle->density = 0.00000000000001;
+}
+
+__global__ void cuda_update(particle* list, int size, double dt, input_t* input){
+	int index = blockDim.x*blockIdx.x + threadIdx.x;
+	if(index > size){return;}
+	#define vel (list[index].vel)
+	#define pos (list[index].pos)
+
+	particle* obj = &list[index];
+
+	// Forces
+	vel.y += GRAVITY*dt; // Gravity
+	if(input->mouseLeft||input->mouseRight){ // Magic mouse
+		vect2d mouse_vect = vect2d(input->mouseX, input->mouseY);
+		vect2d force_vect = mouse_vect - pos;
+		if(force_vect.getMag() < 40){
+			vel += (force_vect*mouse_force*dt) * (input->mouseLeft?1:-1);
+		}
+	}
+	vect2d pressure = calcGradient(list, size, index) / obj->density; // pressure
+	vel += (pressure*-dt);
+
+	// vel += calcViscosityForce(list, size, index);
+	// vel *= 0.995; // viscosity
+
+	// Velocity Clamping
+	// if(vel.getMag()>(100/dt)){
+	// 	vel = vel/2;
+	// }
+	pos += vel*dt;// velocity
+
+	// Collision
+	if (pos.y > SCREEN_HEIGHT-obj->radius){ // floor
+		pos.y = SCREEN_HEIGHT-obj->radius;
+		vel.y = -vel.y*BOUNCE_CONST;
+		pos += vel*dt;// velocity
+	}
+	else if (pos.y < obj->radius){ // ceiling
+		pos.y = obj->radius;
+		vel.y = -vel.y*BOUNCE_CONST;
+		pos += vel*dt;// velocity
+	}
+	if (pos.x < obj->radius){ // L wall
+		pos.x = obj->radius;
+		vel.x = -vel.x*BOUNCE_CONST;
+		pos += vel*dt;// velocity
+	}
+	else if (pos.x > SCREEN_WIDTH-obj->radius){ // R wall
+		pos.x = SCREEN_WIDTH-obj->radius;
+		vel.x = -vel.x*BOUNCE_CONST;
+		pos += vel*dt;// velocity
+	}
+
+	#undef vel
+	#undef pos
+}
+
+void cuda_particle_update(particle* list, int size, double dt, input_t* input){
+	
+	// alocate mem, only on first
+	if(first){
+		first = false;
+		int bytes = size * sizeof(particle);
+  		cudaMalloc((void**) &list_d, bytes);
+  		cudaMemcpy(list_d, list, bytes, cudaMemcpyHostToDevice);
+  		cudaMalloc((void**) &input_d, sizeof(input_t));
+	}
+	// update input each frame
+	cudaMemcpy(input_d, input, sizeof(input_t), cudaMemcpyHostToDevice);
+	
+	// block size
+	dim3 blocks(ceil(size/(float)BLOCK_SIZE), 1, 1);
+  	dim3 threads(BLOCK_SIZE, 1, 1);
+
+	// launch kernel
+	cuda_update<<<blocks, threads>>>(list_d, size, dt, input_d
+		);
+
+  	cudaDeviceSynchronize();
+  	cudaMemcpy(list, list_d, size*sizeof(particle), cudaMemcpyDeviceToHost);  
+}
+
+void cuda_particle_updateDensities(particle* list, int size){
+	if(first){
+		first = false;
+		int bytes = size * sizeof(particle);
+  		cudaMalloc((void**) &list_d, bytes);
+  		cudaMemcpy(list_d, list, bytes, cudaMemcpyHostToDevice);
+  		cudaMalloc((void**) &input_d, sizeof(input_t));
+	}
+	dim3 blocks(ceil(size/(float)BLOCK_SIZE), 1, 1);
+  	dim3 threads(BLOCK_SIZE, 1, 1);
+
+	// launch kernel
+	cuda_density<<<blocks, threads>>>(list_d, size);
+
+  	cudaDeviceSynchronize();
+}
+
+
+
+#endif // __NVCC__

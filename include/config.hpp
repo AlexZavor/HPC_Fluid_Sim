@@ -7,18 +7,21 @@
 #define PART_COLOR 0,0,255
 
 // Physics Defines
-// #define GRAVITY 1000
-// #define GRAVITY 0
-extern double GRAVITY;
-#define BOUNCE_CONST 0.5
+#define GRAVITY 650
+// extern double GRAVITY;
+#define BOUNCE_CONST 0.8
 
-// #define MOUSE_FORCE 10
-extern double mouse_force;
+#define mouse_force 100
+// extern double mouse_force;
 
 // Pressure defines
-// #define SMOOTH_RADIUS 50
-extern double SMOOTH_RADIUS;
-// #define TARGET_DENSITY 0.01
-extern double TARGET_DENSITY;
-// #define PRESSURE_FORCE 1500000
-extern double PRESSURE_FORCE;
+#define SMOOTH_RADIUS 65
+// extern double SMOOTH_RADIUS;
+#define TARGET_DENSITY 0.0155
+// extern double TARGET_DENSITY;
+#define PRESSURE_FORCE 7000000
+// extern double PRESSURE_FORCE;
+
+// Benchmark defines
+#define BENCH_FRAMES 600
+#define SKIPPED_FRAMES 3
