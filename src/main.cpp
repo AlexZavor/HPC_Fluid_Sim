@@ -8,19 +8,12 @@
 
 input_t input;
 particle* particles;
-#define PARTICLES_X 80
-#define PARTICLES_Y 40
+#define PARTICLES_X 40
+#define PARTICLES_Y 80
 #define TOTAL_PARTICLES PARTICLES_X*PARTICLES_Y
 
 // GUI variables
-ui* gui;
-#ifndef __NVCC__
-double mouse_force = 6000;
-double PRESSURE_FORCE = 40000000;
-double GRAVITY = 2000;
-double TARGET_DENSITY = 0.0155;
-double SMOOTH_RADIUS = 100;
-#endif
+// ui* gui;
 
 #ifdef BENCHMARK
 double frametimes[BENCH_FRAMES];
@@ -34,6 +27,7 @@ void make_particles(vect2d pos, int width, int height, int particle_size, int pa
         for(int y = 0; y < height; y++){
             vect2d pos_noise = vect2d(rand()%100/(double)10000,rand()%100/(double)10000);
             particle_init( &particles[y*(width) + x], pos+vect2d(x*particle_space, y*particle_space) + pos_noise, particle_size);
+            world_to_sim(&(particles[y*(width) + x].pos));
         }
     }
 }
@@ -43,17 +37,10 @@ int main(int argc, char** argv) {
     graphics_init(SCREEN_WIDTH, SCREEN_HEIGHT);
     input_init();
 
-    make_particles(vect2d(50,100), PARTICLES_X, PARTICLES_Y, 4, 7.5);
+    make_particles(vect2d(180,20), PARTICLES_X, PARTICLES_Y, 4, 8);
 
     // UI
-    gui = new ui();
-    #ifndef __NVCC__
-    gui->addSlider("Fm", &mouse_force, 0, 10000);
-    gui->addSlider("Fp", &PRESSURE_FORCE, 0, 100000000);
-    gui->addSlider("G", &GRAVITY, 0, 10000);
-    gui->addSlider("TD", &TARGET_DENSITY, 0, 0.03);
-    gui->addSlider("SR", &SMOOTH_RADIUS, 0, 500);
-    #endif
+    // gui = new ui();
 
     // Loop
     while (!input.quit) {
@@ -62,8 +49,8 @@ int main(int argc, char** argv) {
 
         // Timing
         double dt_real = timing_getDelta();
-        double dt = 5/(double)1000;
-        if(dt_real < dt){ // No overspeedy frames
+        double dt = 10/(double)1000;
+        if(dt_real < dt){ // No over-speedy frames
             dt = dt_real;
         }
         
@@ -75,23 +62,15 @@ int main(int argc, char** argv) {
         #ifdef __NVCC__
             cuda_particle_update(particles, TOTAL_PARTICLES, dt, &input);
         #else
-            particle_updateDensities(particles, TOTAL_PARTICLES);
-            #if defined(_OPENMP)
-                #pragma omp parallel for schedule(dynamic, 8)
-            #endif
-            for(int i = 0; i < TOTAL_PARTICLES; i++){
-                particle_update(particles, TOTAL_PARTICLES, i, dt, &input);
-            }
+            particle_update(particles, TOTAL_PARTICLES, dt, &input);
         #endif
         // --------------- END Critical Section
 
         // Draw
-        for(int i = 0; i < TOTAL_PARTICLES; i++){
-            particle_draw(&particles[i]);
-        }
+        particle_draw(particles, TOTAL_PARTICLES);
 
         //GUI
-        gui->tick(&input);
+        // gui->tick(&input);
         static char fps[12];
         sprintf(fps, "FPS - %2.2f", 1/dt_real);
         graphics_drawString(vect2d(0,10), fps, _RGB(255,255,255));
@@ -102,7 +81,7 @@ int main(int argc, char** argv) {
         // Benchmark check
         #ifdef BENCHMARK
         frames++;
-        if(frames >= SKIPPED_FRAMES){
+        if(frames > SKIPPED_FRAMES){
             frametimes[frames-SKIPPED_FRAMES] = dt_real;
         }
         if(frames >= BENCH_FRAMES + SKIPPED_FRAMES){
@@ -118,9 +97,9 @@ int main(int argc, char** argv) {
     }
 
     free(particles);
-    #ifndef BENCHMARK
-        gui->printData();
-    #endif
+    // #ifndef BENCHMARK
+    //     gui->printData();
+    // #endif
 
     graphics_deinit();
     input_deinit();

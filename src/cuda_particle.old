@@ -1,7 +1,6 @@
-// #define __NVCC__//just for writing code.
-#ifdef __NVCC__
+#ifdef __device__
 #include "particle.cpp"
-#include "vect2d.h"
+#include "vect2d.hpp"
 #include "config.hpp"
 #include <math.h>
 #include <cuda.h>
@@ -15,7 +14,7 @@ __global__ void cuda_update(particle* list, int size, double dt, input_t* input)
 	int index = blockDim.x*blockIdx.x + threadIdx.x;
 	if(index > size){return;}
 	
-	// Update Densitys
+	// Update Density
 	particle* obj = &list[index];
 	obj->density = calcDensity(list, size, index);
 	if (obj->density == 0) 
@@ -76,7 +75,7 @@ __global__ void cuda_update(particle* list, int size, double dt, input_t* input)
 
 void cuda_particle_update(particle* list, int size, double dt, input_t* input){
 	
-	// alocate mem, only on first
+	// allocate mem, only on first
 	if(first){
 		first = false;
 		int bytes = size * sizeof(particle);

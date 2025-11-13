@@ -29,6 +29,9 @@ public:
     CU_FLAG double getMag(){
         return sqrt((x*x) + (y*y));
     }
+    CU_FLAG double getMag2(){
+        return (x*x) + (y*y);
+    }
     CU_FLAG vect2d rotate(double angle){
         double px = x * cos(angle) - y * sin(angle);
         double py = x * sin(angle) + y * cos(angle);
@@ -54,6 +57,8 @@ public:
         value.y = obj * y;
         return value;
     }
+
+    CU_FLAG double operator*(const vect2d& b) const { return x*b.x + y*b.y; }
     CU_FLAG void operator*=(double const& obj){
         this->x *= obj;
         this->y *= obj;

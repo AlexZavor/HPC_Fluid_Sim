@@ -7,3 +7,10 @@ CUDA  :  30.23ms
 serial: 837.71ms
 OMP   :  56.12ms
 CUDA  :  33.12ms
+
+// Redesign
+
+(11/13/25) 40x80 particles, laptop unplugged
+serial: 417.33ms
+OMP   : 117.70ms
+CUDA  : N/A

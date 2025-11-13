@@ -1,6 +1,6 @@
 #pragma once
 #include <X11/Xlib.h>
-#include "vect2d.h"
+#include "vect2d.hpp"
 
 // ======= System Functions ==========
 // Get X11 display and window handles

@@ -9,7 +9,7 @@ Build with Makefile
 make
 ```
 
-or build with gcc
+or build with g++
 ```shell
-gcc ~~~~~(TODO:)
+g++ src/graphics.cpp src/gui.cpp src/input.cpp src/main.cpp src/particle.cpp src/timing.cpp -lX11 -Iinclude/ -Wall -o OMP.out -fopenmp
 ```
