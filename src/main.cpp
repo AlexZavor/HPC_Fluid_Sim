@@ -9,7 +9,7 @@
 input_t input;
 particle* particles;
 #define PARTICLES_X 40
-#define PARTICLES_Y 80
+#define PARTICLES_Y 90
 #define TOTAL_PARTICLES PARTICLES_X*PARTICLES_Y
 
 // GUI variables
@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
     graphics_init(SCREEN_WIDTH, SCREEN_HEIGHT);
     input_init();
 
-    make_particles(vect2d(180,20), PARTICLES_X, PARTICLES_Y, 4, 8);
+    make_particles(vect2d(150,20), PARTICLES_X, PARTICLES_Y, 4, 7);
 
     // UI
     // gui = new ui();
@@ -49,21 +49,13 @@ int main(int argc, char** argv) {
 
         // Timing
         double dt_real = timing_getDelta();
-        double dt = 10/(double)1000;
-        if(dt_real < dt){ // No over-speedy frames
-            dt = dt_real;
-        }
         
         // Erase
         graphics_clearScreen(_RGB(BKG_COLOR));
         
         // --------------- Critical Section
         // Update
-        #ifdef __NVCC__
-            cuda_particle_update(particles, TOTAL_PARTICLES, dt, &input);
-        #else
-            particle_update(particles, TOTAL_PARTICLES, dt, &input);
-        #endif
+        particle_update(particles, TOTAL_PARTICLES, &input);
         // --------------- END Critical Section
 
         // Draw
