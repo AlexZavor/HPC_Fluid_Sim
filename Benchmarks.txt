@@ -31,22 +31,22 @@ OMP   :  18.323384ms
 CUDA  :  16.060590ms
 
 -------------OMP static vs dynamic X vs guided X---------------
-(11/13/25) 90x40 particles, Auto-02.
-static 		: 33.662154ms
-dynamic, 1  : 17.604521ms
-dynamic, 2  : 17.747860ms
-dynamic, 4  : 17.863911ms
-dynamic, 8  : 18.150938ms
-dynamic, 16 : 19.173886ms
-dynamic, 32 : 21.386053ms
-dynamic, 64 : 26.774290ms
-guided,  1  : 18.161245ms
-guided,  2  : 18.176421ms
-guided,  4  : 18.182894ms
-guided,  8  : 18.459546ms
-guided,  16 : 19.195047ms
-guided,  32 : 19.386113ms
-guided,  64 : 24.317178ms
+(11/18/25) 90x40 particles, Auto-05.
+static 		: 40.223711ms
+dynamic, 1  : 31.804508ms
+dynamic, 2  : 32.085855ms
+dynamic, 4  : 32.289135ms
+dynamic, 8  : 32.562986ms
+dynamic, 16 : 33.086879ms
+dynamic, 32 : 34.125895ms
+dynamic, 64 : 35.037713ms
+guided,  1  : 33.031264ms
+guided,  2  : 33.147509ms
+guided,  4  : 33.108091ms
+guided,  8  : 33.409796ms
+guided,  16 : 33.789734ms
+guided,  32 : 34.781400ms
+guided,  64 : 36.897518ms
 
 (11/13/25) 60x20 particles, Auto-02.
 static 		: 5.518189ms
