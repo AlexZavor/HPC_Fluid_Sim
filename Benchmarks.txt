@@ -1,4 +1,4 @@
-(11/6/25) 80x40 particles, DigialLab.
+(11/6/25) 80x40 particles, DigitalLab.
 serial: 410.53ms
 OMP   :  47.63ms
 CUDA  :  30.23ms
@@ -64,3 +64,7 @@ guided,  8  : 2.518183ms
 guided,  16 : 2.672492ms
 guided,  32 : 5.988354ms
 guided,  64 : 5.137204ms
+
+serial: 447.5ms
+no upd:   0.8ms
+openMP:  40.2ms

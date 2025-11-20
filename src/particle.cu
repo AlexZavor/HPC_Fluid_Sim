@@ -14,7 +14,7 @@
 *
 */
 
-#define SCHEDULE schedule(dynamic, 2)
+#define SCHEDULE schedule(dynamic, 1)
 
 #define G (.02f * .25)							// Gravitational Constant for our simulation
 
@@ -27,7 +27,7 @@
 
 #define bottom (0)								// The floor of the world
 
-// Cuda Kernals
+// Cuda Kernels
 #ifdef __NVCC__
 #include <cuda.h>
 
@@ -116,7 +116,7 @@ __global__ void cuda_density(particle* particles, int size, input_t* input){
 		// And do not calculate an interaction for a particle with itself!
 		if(j == i) continue;
 
-		// The vector seperating the two particles
+		// The vector separating the two particles
 		vect2d rij = particles[j].pos - particles[i].pos;
 
 		// Along with the squared distance between
@@ -227,7 +227,7 @@ __global__ void cuda_viscosity(particle* particles, int size, input_t* input){
 		// And do not calculate an interaction for a particle with itself!
 		if(j == i) continue;
 
-		// The vector seperating the two particles
+		// The vector separating the two particles
 		vect2d rij = particles[j].pos - particles[i].pos;
 
 		// Along with the squared distance between
@@ -386,7 +386,7 @@ void particle_update(particle* particles, int size, input_t* input){
 			// And do not calculate an interaction for a particle with itself!
 		if(j == i) continue;
 
-			// The vector seperating the two particles
+			// The vector separating the two particles
 			vect2d rij = particles[j].pos - particles[i].pos;
 
 			// Along with the squared distance between
@@ -497,7 +497,7 @@ void particle_update(particle* particles, int size, input_t* input){
 			// And do not calculate an interaction for a particle with itself!
 			if(j == i) continue;
 
-			// The vector seperating the two particles
+			// The vector separating the two particles
 			vect2d rij = particles[j].pos - particles[i].pos;
 
 			// Along with the squared distance between
