@@ -1,3 +1,5 @@
+// Particle simulation class. does math for a particle sim in X11
+
 #pragma once
 #include "vect2d.hpp"
 #include "config.hpp"

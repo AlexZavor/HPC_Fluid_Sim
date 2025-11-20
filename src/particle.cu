@@ -31,7 +31,7 @@
 #ifdef __NVCC__
 #include <cuda.h>
 
-#define BLOCK_SIZE 512
+#define BLOCK_SIZE 32
 static particle* list_d;
 static input_t* input_d;
 static int first = true;
@@ -276,10 +276,10 @@ void particle_init(particle* obj, vect2d pos, unsigned int radius){
 	obj->beta = 0.f;
 }
 
-
+// update all of the particles in the list, using whatever method is set
 void particle_update(particle* particles, int size, input_t* input){
 
-	#ifdef __NVCC__
+	#ifdef __NVCC__ // CUDA code
 	// allocate mem, only on first
 	if(first){
 		first = false;
@@ -303,8 +303,8 @@ void particle_update(particle* particles, int size, input_t* input){
 	cuda_viscosity<<<blocks, threads>>>(list_d, size, input_d);
   	cudaDeviceSynchronize();
   	cudaMemcpy(particles, list_d, size*sizeof(particle), cudaMemcpyDeviceToHost);  
-	#else
-
+	
+	#else // Serial and OMP
 
 	// UPDATE
 	//

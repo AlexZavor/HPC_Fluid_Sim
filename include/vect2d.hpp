@@ -1,3 +1,5 @@
+// 2d vector class (doubles) for simple 2d math.
+
 #pragma once
 
 #ifdef __host__

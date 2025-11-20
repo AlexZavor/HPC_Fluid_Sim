@@ -1,3 +1,5 @@
+// X11 gui class for refining values with sliders. not used in final product
+
 #pragma once
 #include "input.hpp"
 #include <vector>

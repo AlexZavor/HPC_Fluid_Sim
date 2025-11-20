@@ -1,3 +1,12 @@
+/*****************************
+*
+*This is some old code I wrote, but then adapted it to use another code base
+*because I think it worked a lot better. and since this project is about
+*optimization, and not writing a fluid sim, I think it's ok.
+*
+*
+*****************************/
+
 #include "particle.hpp"
 #include "graphics.hpp"
 #include "config.hpp"

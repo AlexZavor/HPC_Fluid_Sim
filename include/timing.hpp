@@ -1,3 +1,6 @@
+// Timing class used for some timing and benchmarking 
+// This code was writen by GitHub Copilot and then edited by me.
+
 #pragma once
 
 // Reset internal timer (sets "last" to now)

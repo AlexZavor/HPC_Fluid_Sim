@@ -4,11 +4,13 @@
 static struct timespec last_ts;
 static int initialized = 0;
 
+// Reset timer. good to set before first frame
 void timing_reset(void) {
     clock_gettime(CLOCK_MONOTONIC, &last_ts);
     initialized = 1;
 }
 
+// Get time since last "getDelta" in seconds
 double timing_getDelta(void) {
     struct timespec now;
     if (!initialized) {
@@ -20,6 +22,7 @@ double timing_getDelta(void) {
     return dt;
 }
 
+// Sleep program for set time
 void timing_sleepSeconds(double seconds) {
     if (seconds <= 0.0) return;
     struct timespec req;

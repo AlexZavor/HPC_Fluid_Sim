@@ -7,9 +7,11 @@ Just uses X11 library on linux (No windows compatibility, sorry)
 Build with Makefile 
 ```shell
 make
+./OMP.out
 ```
 
 or build with g++
 ```shell
-g++ src/graphics.cpp src/gui.cpp src/input.cpp src/main.cpp src/particle.cpp src/timing.cpp -lX11 -Iinclude/ -Wall -o OMP.out -fopenmp
+g++ src/graphics.cpp src/input.cpp src/main.cpp src/particle.cpp src/timing.cpp -lX11 -Iinclude/ -Wall -o OMP.out -fopenmp
+./OMP.out
 ```

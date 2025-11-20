@@ -1,3 +1,5 @@
+// class for reading input from X11
+
 #pragma once
 
 typedef struct {

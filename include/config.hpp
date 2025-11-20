@@ -10,14 +10,13 @@
 
 
 #define BOUNCE_CONST 0.7
-
-
-// Benchmark defines
-#define BENCH_FRAMES 600
-#define SKIPPED_FRAMES 3
-
 #define mouse_force 3000
 #define PRESSURE_FORCE 30000000
 #define GRAVITY 2000
 #define TARGET_DENSITY 0.0155
 #define SMOOTH_RADIUS 70
+
+
+// Benchmark defines
+#define BENCH_FRAMES 600
+#define SKIPPED_FRAMES 3

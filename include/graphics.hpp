@@ -1,3 +1,5 @@
+// X11 wrapper for this project for drawing to the screen using a frame buffer.
+
 #pragma once
 #include <X11/Xlib.h>
 #include "vect2d.hpp"

@@ -89,9 +89,6 @@ int main(int argc, char** argv) {
     }
 
     free(particles);
-    // #ifndef BENCHMARK
-    //     gui->printData();
-    // #endif
 
     graphics_deinit();
     input_deinit();
